@@ -1,4 +1,3 @@
-
 import { Lead, ManpowerStats } from './types';
 
 export const MOCK_LEADS: Lead[] = [

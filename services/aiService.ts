@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { Lead, ManpowerStats } from "../types";
 
@@ -29,7 +28,6 @@ export class AIService {
         model: 'gemini-3-flash-preview',
         contents: prompt,
       });
-
       return response.text || "Unable to generate insights at this time.";
     } catch (error) {
       console.error("Gemini Error:", error);

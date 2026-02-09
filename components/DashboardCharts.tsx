@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -30,11 +29,7 @@ export const SalesFunnelChart: React.FC<ChartProps> = ({ leads }) => {
       <ResponsiveContainer width="100%" height="100%">
         <FunnelChart>
           <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-          <Funnel
-            dataKey="value"
-            data={funnelData}
-            isAnimationActive
-          >
+          <Funnel dataKey="value" data={funnelData} isAnimationActive>
             <LabelList position="right" fill="#64748b" stroke="none" dataKey="name" />
           </Funnel>
         </FunnelChart>
@@ -48,28 +43,15 @@ export const LeadsByCategoryChart: React.FC<ChartProps> = ({ leads }) => {
     acc[lead.category] = (acc[lead.category] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-
   const data = Object.entries(categories).map(([name, value]) => ({ name, value }));
-
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            paddingAngle={5}
-            dataKey="value"
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
+          <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+            {data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
           </Pie>
-          <Tooltip />
-          <Legend />
+          <Tooltip /><Legend />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -77,20 +59,15 @@ export const LeadsByCategoryChart: React.FC<ChartProps> = ({ leads }) => {
 };
 
 export const LeadTrendsChart: React.FC<ChartProps> = ({ leads }) => {
-  // Group leads by date (YYYY-MM)
   const groupedData = leads.reduce((acc, lead) => {
     const date = new Date(lead.dateAdded);
     const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-    if (!acc[month]) {
-      acc[month] = { month, count: 0, mrc: 0 };
-    }
+    if (!acc[month]) acc[month] = { month, count: 0, mrc: 0 };
     acc[month].count += 1;
     acc[month].mrc += lead.mrcValue;
     return acc;
   }, {} as Record<string, { month: string, count: number, mrc: number }>);
-
   const data = Object.values(groupedData).sort((a, b) => a.month.localeCompare(b.month));
-
   return (
     <div className="space-y-8">
       <div className="h-[300px] w-full bg-white p-4 rounded-2xl border border-slate-100">
@@ -99,38 +76,30 @@ export const LeadTrendsChart: React.FC<ChartProps> = ({ leads }) => {
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
             <XAxis dataKey="month" tick={{ fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
-            <Tooltip 
-              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-            />
+            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
             <Area type="monotone" dataKey="count" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCount)" strokeWidth={3} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-
       <div className="h-[300px] w-full bg-white p-4 rounded-2xl border border-slate-100">
         <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">MRC Value Trend</h4>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorMrc" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
             <XAxis dataKey="month" tick={{ fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 10, fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(val) => `$${val/1000}k`} />
-            <Tooltip 
-              formatter={(val: number) => [`$${val.toLocaleString()}`, 'MRC Value']}
-              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-            />
+            <Tooltip formatter={(val: number) => [`$${val.toLocaleString()}`, 'MRC Value']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
             <Area type="monotone" dataKey="mrc" stroke="#10b981" fillOpacity={1} fill="url(#colorMrc)" strokeWidth={3} />
           </AreaChart>
         </ResponsiveContainer>
@@ -139,59 +108,14 @@ export const LeadTrendsChart: React.FC<ChartProps> = ({ leads }) => {
   );
 };
 
-export const SourceWisePerformance: React.FC<ChartProps> = ({ leads }) => {
-  const sources = leads.reduce((acc, lead) => {
-    if (!acc[lead.source]) {
-      acc[lead.source] = { name: lead.source, count: 0, value: 0 };
-    }
-    acc[lead.source].count += 1;
-    acc[lead.source].value += lead.mrcValue;
-    return acc;
-  }, {} as Record<string, { name: string, count: number, value: number }>);
-
-  const data = (Object.values(sources) as Array<{ name: string, count: number, value: number }>).sort((a, b) => b.value - a.value);
-
-  return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" hide />
-          <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
-          <Tooltip 
-             formatter={(value: number) => [`$${value.toLocaleString()}`, 'MRC Value']}
-             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-          />
-          <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-};
-
 export const ManpowerUtilization: React.FC<{ active: number, total: number }> = ({ active, total }) => {
-  const data = [
-    { name: 'Active', value: active },
-    { name: 'Inactive', value: total - active },
-  ];
-
+  const data = [{ name: 'Active', value: active }, { name: 'Inactive', value: total - active }];
   return (
     <div className="h-[200px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            startAngle={180}
-            endAngle={0}
-            innerRadius={60}
-            outerRadius={80}
-            paddingAngle={0}
-            dataKey="value"
-          >
-            <Cell fill="#10b981" />
-            <Cell fill="#e2e8f0" />
+          <Pie data={data} cx="50%" cy="50%" startAngle={180} endAngle={0} innerRadius={60} outerRadius={80} paddingAngle={0} dataKey="value">
+            <Cell fill="#10b981" /><Cell fill="#e2e8f0" />
           </Pie>
           <Tooltip />
         </PieChart>
