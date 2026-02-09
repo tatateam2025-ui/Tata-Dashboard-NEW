@@ -4,7 +4,8 @@ import {
   Users, TrendingUp, Target, Database, RefreshCcw, 
   LayoutDashboard, Filter, Briefcase, Activity,
   Search, Download, Info, ArrowUpRight, HelpCircle,
-  Upload, FileText, CheckCircle2, XCircle, AlertCircle, LineChart
+  Upload, FileText, CheckCircle2, XCircle, AlertCircle, LineChart,
+  Sparkles
 } from 'lucide-react';
 import { StatCard } from './components/StatCard';
 import { 
@@ -13,19 +14,25 @@ import {
   ManpowerUtilization,
   LeadTrendsChart
 } from './components/DashboardCharts';
+import { AIInsightsModal } from './components/AIInsightsModal';
 import { DashboardData, ViewMode, FilterState, Lead } from './types';
 import { DataService } from './services/dataService';
+import { AIService } from './services/aiService';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.OVERVIEW);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showDeploymentHelp, setShowDeploymentHelp] = useState(false);
   
   // Custom Data State
   const [uploadedLeads, setUploadedLeads] = useState<Lead[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // AI Insights State
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [aiInsights, setAIInsights] = useState("");
+  const [isAILoading, setIsAILoading] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState<FilterState>({
@@ -106,6 +113,20 @@ const App: React.FC = () => {
     }
   };
 
+  const handleGenerateAIInsights = async () => {
+    if (!data) return;
+    setIsAIModalOpen(true);
+    setIsAILoading(true);
+    try {
+      const insights = await AIService.generateExecutiveInsights(filteredLeads, data.manpower);
+      setAIInsights(insights);
+    } catch (error) {
+      setAIInsights("Error generating insights.");
+    } finally {
+      setIsAILoading(false);
+    }
+  };
+
   if (loading && !uploadedLeads) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
@@ -144,13 +165,23 @@ const App: React.FC = () => {
                     Master Sync Active
                   </span>
                 )}
-                <span className="bg-slate-100 px-2 py-0.5 rounded">Build 3.0.1</span>
+                <span className="bg-slate-100 px-2 py-0.5 rounded">Build 3.2.0</span>
                 <span>Updated: {new Date(data!.lastUpdated).toLocaleTimeString()}</span>
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <button 
+              onClick={handleGenerateAIInsights}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl hover:shadow-lg hover:shadow-indigo-200 transition-all active:scale-95 group"
+            >
+              <Sparkles size={18} className="group-hover:animate-pulse" />
+              AI Insights
+            </button>
+
+            <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden md:block"></div>
+
             <div className="relative group">
                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
                <input 
@@ -343,23 +374,29 @@ const App: React.FC = () => {
                 </div>
                 
                 <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl">
-                   <h4 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Quick Analysis</h4>
+                   <h4 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">AI Analysis Pulse</h4>
                    <div className="space-y-5">
                       <div className="flex items-start gap-4">
-                        <div className="p-2 bg-white/10 rounded-lg"><Info size={18} /></div>
+                        <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><Sparkles size={18} /></div>
                         <div>
-                          <p className="text-sm font-medium">Data Integrity</p>
-                          <p className="text-xs text-slate-400">{uploadedLeads ? '100% User Defined' : 'Simulated Master Feed'}</p>
+                          <p className="text-sm font-medium">Smart Insights Ready</p>
+                          <p className="text-xs text-slate-400">Click the AI Insights button for a detailed executive scan of current metrics.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-4">
                         <div className="p-2 bg-green-500/20 rounded-lg text-green-400"><ArrowUpRight size={18} /></div>
                         <div>
-                          <p className="text-sm font-medium">Funnel Efficiency</p>
-                          <p className="text-xs text-slate-400">Calculating conversion probability...</p>
+                          <p className="text-sm font-medium">Data Integrity</p>
+                          <p className="text-xs text-slate-400">{uploadedLeads ? '100% User Defined' : 'Simulated Master Feed'}</p>
                         </div>
                       </div>
                    </div>
+                   <button 
+                     onClick={handleGenerateAIInsights}
+                     className="w-full mt-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-all border border-white/10"
+                   >
+                     Launch Executive Scan
+                   </button>
                 </div>
               </div>
             </div>
@@ -483,6 +520,13 @@ const App: React.FC = () => {
           )}
         </div>
       </main>
+
+      <AIInsightsModal 
+        isOpen={isAIModalOpen} 
+        onClose={() => setIsAIModalOpen(false)} 
+        content={aiInsights}
+        isLoading={isAILoading}
+      />
 
       <footer className="py-12 px-6 border-t border-slate-200 bg-white text-center">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
