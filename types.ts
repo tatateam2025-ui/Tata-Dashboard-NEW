@@ -27,7 +27,8 @@ export enum ViewMode {
   OVERVIEW = 'OVERVIEW',
   SALES = 'SALES',
   LEADS = 'LEADS',
-  MANPOWER = 'MANPOWER'
+  MANPOWER = 'MANPOWER',
+  TRENDS = 'TRENDS'
 }
 
 export interface FilterState {

@@ -4,13 +4,14 @@ import {
   Users, TrendingUp, Target, Database, RefreshCcw, 
   LayoutDashboard, Filter, Briefcase, Activity,
   Search, Download, Info, ArrowUpRight, HelpCircle,
-  Upload, FileText, CheckCircle2, XCircle, AlertCircle
+  Upload, FileText, CheckCircle2, XCircle, AlertCircle, LineChart
 } from 'lucide-react';
 import { StatCard } from './components/StatCard';
 import { 
   SalesFunnelChart, 
   LeadsByCategoryChart, 
-  ManpowerUtilization
+  ManpowerUtilization,
+  LeadTrendsChart
 } from './components/DashboardCharts';
 import { DashboardData, ViewMode, FilterState, Lead } from './types';
 import { DataService } from './services/dataService';
@@ -298,17 +299,18 @@ const App: React.FC = () => {
         </section>
 
         {/* Tab Navigation */}
-        <div className="flex bg-white/50 backdrop-blur rounded-2xl p-1.5 border border-slate-200 w-fit">
+        <div className="flex bg-white/50 backdrop-blur rounded-2xl p-1.5 border border-slate-200 w-fit overflow-x-auto max-w-full">
           {[
             { id: ViewMode.OVERVIEW, label: 'Visual Overview', icon: LayoutDashboard },
             { id: ViewMode.SALES, label: 'Pipeline Funnel', icon: Briefcase },
+            { id: ViewMode.TRENDS, label: 'Lead Trends', icon: LineChart },
             { id: ViewMode.LEADS, label: 'Data Registry', icon: Database },
             { id: ViewMode.MANPOWER, label: 'Team Analytics', icon: Activity },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setViewMode(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap ${
                 viewMode === tab.id 
                   ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200' 
                   : 'text-slate-500 hover:bg-slate-200/50'
@@ -360,6 +362,16 @@ const App: React.FC = () => {
                    </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {viewMode === ViewMode.TRENDS && (
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+              <div className="mb-8">
+                <h3 className="text-xl font-black text-slate-900">Historical Performance</h3>
+                <p className="text-sm text-slate-500">Analysis of lead intake and valuation trends over time</p>
+              </div>
+              <LeadTrendsChart leads={filteredLeads} />
             </div>
           )}
 
