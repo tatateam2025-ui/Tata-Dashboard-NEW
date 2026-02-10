@@ -8,20 +8,37 @@ export interface Lead {
   dateAdded: string;
   clientName: string;
   lastContacted: string;
-  nextFollowUp: string; // Date string
-  owner: string;        // Lead owner/manager
+  nextFollowUp: string;
+  owner: string;
+}
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  designation: string;
+  isOnDuty: boolean;
+  currentAssignment?: string;
+  lastLocation?: string;
+}
+
+export interface OperationalTarget {
+  category: string;
+  mrcTarget: number;
+  leadGoal: number;
 }
 
 export interface ManpowerStats {
   total: number;
-  active: number;    // Currently assigned
-  present: number;   // At office/on duty
-  available: number; // Present but not assigned
+  active: number;    
+  present: number;   
+  available: number; 
+  roster?: StaffMember[];
 }
 
 export interface DashboardData {
   leads: Lead[];
   manpower: ManpowerStats;
+  targets: OperationalTarget[];
   lastUpdated: string;
 }
 
