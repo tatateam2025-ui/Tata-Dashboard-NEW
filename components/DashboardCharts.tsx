@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -67,7 +68,11 @@ export const LeadTrendsChart: React.FC<ChartProps> = ({ leads }) => {
     acc[month].mrc += lead.mrcValue;
     return acc;
   }, {} as Record<string, { month: string, count: number, mrc: number }>);
-  const data = Object.values(groupedData).sort((a, b) => a.month.localeCompare(b.month));
+  
+  // Fix: Explicitly type the result of Object.values to avoid 'unknown' type error in sort (line 70)
+  const data = (Object.values(groupedData) as Array<{ month: string, count: number, mrc: number }>)
+    .sort((a, b) => a.month.localeCompare(b.month));
+
   return (
     <div className="space-y-8">
       <div className="h-[300px] w-full bg-white p-4 rounded-2xl border border-slate-100">

@@ -1,10 +1,13 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { Lead, ManpowerStats } from "../types";
 
 export class AIService {
-  private static ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-
+  // Always use process.env.API_KEY directly and instantiate inside the method to ensure latest key usage.
+  
   static async generateExecutiveInsights(leads: Lead[], manpower: ManpowerStats): Promise<string> {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
     const prompt = `
       You are an expert business consultant. Analyze the following dashboard data for Navigant Tech and provide a high-level executive summary.
       
@@ -24,10 +27,11 @@ export class AIService {
     `;
 
     try {
-      const response = await this.ai.models.generateContent({
+      const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: prompt,
       });
+      // The GenerateContentResponse object features a text property (not a method)
       return response.text || "Unable to generate insights at this time.";
     } catch (error) {
       console.error("Gemini Error:", error);
