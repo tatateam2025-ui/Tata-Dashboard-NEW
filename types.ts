@@ -1,3 +1,4 @@
+
 export interface Lead {
   id: string;
   source: string;
@@ -7,13 +8,15 @@ export interface Lead {
   dateAdded: string;
   clientName: string;
   lastContacted: string;
+  nextFollowUp: string; // Date string
+  owner: string;        // Lead owner/manager
 }
 
 export interface ManpowerStats {
   total: number;
-  active: number;
-  present: number;
-  onLeave: number;
+  active: number;    // Currently assigned
+  present: number;   // At office/on duty
+  available: number; // Present but not assigned
 }
 
 export interface DashboardData {
@@ -24,7 +27,7 @@ export interface DashboardData {
 
 export enum ViewMode {
   OVERVIEW = 'OVERVIEW',
-  SALES = 'SALES',
+  FOLLOW_UPS = 'FOLLOW_UPS',
   LEADS = 'LEADS',
   MANPOWER = 'MANPOWER',
   TRENDS = 'TRENDS'
@@ -34,5 +37,5 @@ export interface FilterState {
   search: string;
   status: string;
   category: string;
-  source: string;
+  owner: string;
 }
